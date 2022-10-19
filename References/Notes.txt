@@ -24,7 +24,8 @@ Deep CNN-Based Real-Time Traffic Light Detector for Self-Driving Vehicles
 
 Driverless Car: Autonomous Driving Using Deep Reinforcement Learning In Urban Environment
 - A deep neural network based on fully-connected CNN to approximate Q-function. The network consists of 3 convolutional layers and 4 dense layers.
-- Our action definition also defines left and right motions for the car to teach the agent to change lane. The actions and their corresponding rewards for the car to be trained using DQN.
+- Our action definition also defines left and right motions for the car to teach the agent to change lane. The actions and their corresponding rewards 
+for the car to be trained using DQN.
 - Unity game to train the DQN to drive the car autonomously, with almost real-time driving behaviour.
 
 Road-Segmentation-Based Curb Detection Method for Self-Driving via a 3D-LiDAR Sensor
