@@ -33,3 +33,10 @@ Road-Segmentation-Based Curb Detection Method for Self-Driving via a 3D-LiDAR Se
 - A Naive Bayes framework was proposed in to detect the road boundary using stereo vision and the method ofsupport vector regression was used to fit curb curves. However, it is hard for camera-based methods to accurately detect the position of curbs due to the slight difference in color between the road surfaces and curbs.
 
 Working model of Self-driving car using Convolutional Neural Network, Raspberry Pi and Arduino
+- The image is resized, converted into grayscale. 
+- Once it is completed the image is fed into the Convolutional Neural Network. 
+- The controller simple sends the corresponding signal and the car moves in that particular direction.
+- Takes an image with the help of Pi cam attached with Raspberry Pi on the car. 
+- The Raspberry-Pi and the laptop is connected to the same network, the Raspberry Pi sends the image captured which serves as the input image tothe Convolutional Neural Network. 
+- Upon prediction the model gives one of the four output.
+- When the result is predicted corresponding Arduino signal is triggered which in turn helps the car to move in a particular direction with the help of its controller.
