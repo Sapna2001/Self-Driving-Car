@@ -1,0 +1,42 @@
+Artificial Intelligence based Self-Driving Car
+- The (CNN) convolutional neural network running on the server will be used to enable lane detection toprovide steering predictions based on the input image.
+- The haar cascade classifier will be used to detect traffic signals 
+- The monocular vision algorithms to calculate distance from them.
+- The ultrasonic sensor will be used for front collision avoidance.
+- The system design consists of three units.
+i) Input unit containing a pi camera and ultrasonic sensor
+ii) Processing unit which is the laptop that will act as a server, the neural network will be running over here
+ii) RC control unit which is Arduino. 
+- The raspberry pi board of the B+ model will be connected with the raspberry pi camera and an ultrasonic sensor to stream input data.
+- Two client programs running on raspberry pi one to stream images collected by the pi camera and another to send sensor data through a local wi-fi connection.
+- A multithreaded TCP server program will execute on the raspberry pi to receive image frames and sensor data.  
+- The neural network which is the convolutional neural network will be trained to make steering predictions based on detected lane markings.
+- OpenCV will be used to train the neural network. 
+
+A Self-Driving Car Implementation using Computer Vision for Detection and Navigation
+- Cameras used are a front-facing camera, a rear-facing camera and one wide-angle camera on either side of our car
+- Detect the objects and find their respective positions in our environment with the help of YOLOv3 object detection algorithm.
+- Lane Detection: Inverse perspective mapping which gives us the bird’s eye view of the road ahead of us. To reduce noise, apply gaussian processing and thresholding. RANSAC algorithm to fit appropriate curve representing our current road segment.
+
+Deep CNN-Based Real-Time Traffic Light Detector for Self-Driving Vehicles
+- For real-time traffic light detection of autonomous vehicles, combine a heuristic ROI detector and a lightweight CNN classifier model together.
+- HOG-based SVM for traffic light region detection and CNN for light state recognition.
+
+Driverless Car: Autonomous Driving Using Deep Reinforcement Learning In Urban Environment
+- A deep neural network based on fully-connected CNN to approximate Q-function. The network consists of 3 convolutional layers and 4 dense layers.
+- Our action definition also defines left and right motions for the car to teach the agent to change lane. The actions and their corresponding rewards 
+for the car to be trained using DQN.
+- Unity game to train the DQN to drive the car autonomously, with almost real-time driving behaviour.
+
+Road-Segmentation-Based Curb Detection Method for Self-Driving via a 3D-LiDAR Sensor
+- Detects its curbs using a 3D-LiDAR sensor
+- A Naive Bayes framework was proposed in to detect the road boundary using stereo vision and the method ofsupport vector regression was used to fit curb curves. However, it is hard for camera-based methods to accurately detect the position of curbs due to the slight difference in color between the road surfaces and curbs.
+
+Working model of Self-driving car using Convolutional Neural Network, Raspberry Pi and Arduino
+- The image is resized, converted into grayscale. 
+- Once it is completed the image is fed into the Convolutional Neural Network. 
+- The controller simple sends the corresponding signal and the car moves in that particular direction.
+- Takes an image with the help of Pi cam attached with Raspberry Pi on the car. 
+- The Raspberry-Pi and the laptop is connected to the same network, the Raspberry Pi sends the image captured which serves as the input image tothe Convolutional Neural Network. 
+- Upon prediction the model gives one of the four output.
+- When the result is predicted corresponding Arduino signal is triggered which in turn helps the car to move in a particular direction with the help of its controller.
