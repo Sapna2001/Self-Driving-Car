@@ -1,116 +1,135 @@
 // Left side motor
 const int EnableL = 5;
-const int HighL = 6;       
-const int LowL = 7;
+const int IN1 = 6;       
+const int IN2 = 7;
 
 // Right side motor
 const int EnableR = 10;
-const int HighR = 8;       
-const int LowR = 9;
+const int IN3 = 8;       
+const int IN4 = 9;
 
 
 void setup() {
   pinMode(EnableL, OUTPUT);
-  pinMode(HighL, OUTPUT);
-  pinMode(LowL, OUTPUT);
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
 
   pinMode(EnableR, OUTPUT);
-  pinMode(HighR, OUTPUT); 
-  pinMode(LowR, OUTPUT);
+  pinMode(IN3, OUTPUT); 
+  pinMode(IN4, OUTPUT);
 }
 
 
 void Forward() {
-  digitalWrite(HighL, LOW);
-  digitalWrite(LowL, HIGH);
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, HIGH);
   analogWrite(EnableL,255);
 
-  digitalWrite(HighR, LOW);
-  digitalWrite(LowR, HIGH);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, HIGH);
   analogWrite(EnableR,255);
   
 }
 
 void Backward() {
-  digitalWrite(HighL, HIGH);
-  digitalWrite(LowL, LOW);
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
   analogWrite(EnableL,255);
 
-  digitalWrite(HighR, HIGH);
-  digitalWrite(LowR, LOW);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
   analogWrite(EnableR,255); 
 }
 
 // Reduce speed of left side slightly
 void Left1() {
-  digitalWrite(HighL, LOW);
-  digitalWrite(LowL, HIGH);
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, HIGH);
   analogWrite(EnableL,200);
 
-  digitalWrite(HighR, LOW);
-  digitalWrite(LowR, HIGH);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, HIGH);
   analogWrite(EnableR,255);  
 }
 
 // Reduce speed of left side moderately
 void Left2() {
-  digitalWrite(HighL, LOW);
-  digitalWrite(LowL, HIGH);
-  analogWrite(EnableL,160);
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  analogWrite(EnableL, 160);
 
-  digitalWrite(HighR, LOW);
-  digitalWrite(LowR, HIGH);
-  analogWrite(EnableR,255);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+  analogWrite(EnableR,255); 
   
 }
 
 // Reduce speed of left side extremely 
 void Left3() {
-  digitalWrite(HighL, LOW);
-  digitalWrite(LowL, HIGH);
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, HIGH);
   analogWrite(EnableL,100);
 
-  digitalWrite(HighR, LOW);
-  digitalWrite(LowR, HIGH);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, HIGH);
   analogWrite(EnableR,255);
   
 }
 
 // Reduce speed of right side slightly
 void Right1() {
-  digitalWrite(HighL, LOW);
-  digitalWrite(LowL, HIGH);
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
   analogWrite(EnableL,255);
 
-  digitalWrite(HighR, LOW);
-  digitalWrite(LowR, HIGH);
-  analogWrite(EnableR,200);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+  analogWrite(EnableR,200); 
 }
 
 // Reduce speed of right side moderately
 void Right2() {
-  digitalWrite(HighL, LOW);
-  digitalWrite(LowL, HIGH);
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, HIGH);
   analogWrite(EnableL,255);
 
-  digitalWrite(HighR, LOW);
-  digitalWrite(LowR, HIGH);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, HIGH);
   analogWrite(EnableR,160);
   
 }
 
 // Reduce speed of right side extremely 
 void Right3() {
-  digitalWrite(HighL, LOW);
-  digitalWrite(LowL, HIGH);
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
   analogWrite(EnableL,255);
 
-  digitalWrite(HighR, LOW);
-  digitalWrite(LowR, HIGH);
-  analogWrite(EnableR,100);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+  analogWrite(EnableR,100); 
 }
 
+void Stop() {
+  analogWrite(EnableL, 0);
+  analogWrite(EnableL, 0);
+}
 
 void loop() {
-  Left3();
+  Forward();
+  delay(3000);
+  // Backward();
+  // delay(3000);
+  // // Left1();
+  // // delay(1000);
+  // Left2();
+  // delay(1000);
+  // Left3();
+  // delay(1000);
+  // Right1();
+  // delay(1000);
+  // Right2();
+  // delay(1000);
+  // Right3();
+  // delay(1000);
 }
