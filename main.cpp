@@ -68,12 +68,14 @@ int main(int argc, char **argv)
 
         Capture();
         Perspective();
-
+	
+	// Original frame
         namedWindow("orignal", WINDOW_KEEPRATIO);
         moveWindow("orignal", 50, 100);
         resizeWindow("orignal", 640, 480);
         imshow("orignal", frame);
 
+	// // Bird's eye view frame
         namedWindow("perspective", WINDOW_KEEPRATIO);
         moveWindow("perspective", 500, 100);
         resizeWindow("perspective", 640, 480);
