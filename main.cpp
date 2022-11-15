@@ -84,7 +84,7 @@ int main(int argc, char **argv)
         auto end = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsedSeconds = end - start;
         float time = elapsedSeconds.count();
-        int FPS = 1 / t;
+        int FPS = 1 / time;
 
         waitKey(1);
     }
