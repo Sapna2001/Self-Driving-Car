@@ -8,7 +8,7 @@ using namespace std;
 using namespace cv;
 using namespace raspicam;
 
-Mat frame, matrix, framePerspective;
+Mat frame, matrix, framePerspective, frameGray, frameThreshold, frameEdge, frameFinal;
 RaspiCam_Cv Camera;
 
 Point2f Source[] = { Point2f(50,200),Point2f(200,200),Point2f(0,240), Point2f(360,240) };
@@ -51,6 +51,17 @@ void Perspective()
     	warpPerspective(frame, framePerspective, matrix, Size(360, 240));
 }
 
+// Threshold operations
+void Threshold()
+{
+    cvtColor(framePerspective, frameGray, COLOR_RGB2GRAY);
+    inRange(frameGray, 200, 255, frameThreshold);
+    Canny(frameGray, frameEdge, 900, 900, 3, false);
+    add(frameThreshold, frameEdge, frameFinal);
+    cvtColor(frameFinal, frameFinal, COLOR_GRAY2RGB);
+    cvtColor(frameFinal, frameFinal, COLOR_RGB2BGR);
+}
+
 int main(int argc, char **argv)
 {
     Setup(argc, argv, Camera);
@@ -75,11 +86,23 @@ int main(int argc, char **argv)
         resizeWindow("orignal", 640, 480);
         imshow("orignal", frame);
 
-	// // Bird's eye view frame
+	// Bird's eye view frame
         namedWindow("perspective", WINDOW_KEEPRATIO);
         moveWindow("perspective", 500, 100);
         resizeWindow("perspective", 640, 480);
         imshow("perspective", framePerspective);
+	    
+	// Gray frame
+	namedWindow("gray", WINDOW_KEEPRATIO);
+        moveWindow("gray", 80, 100);
+        resizeWindow("gray", 640, 480);
+        imshow("gray", frameGray);
+	    
+	// Canny edge detection
+	namedWindow("edge", WINDOW_KEEPRATIO);
+        moveWindow("edge", 80, 100);
+        resizeWindow("edge", 640, 480);
+        imshow("edge", frameEdge);
 
         auto end = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsedSeconds = end - start;
