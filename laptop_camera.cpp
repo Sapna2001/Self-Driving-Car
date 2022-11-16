@@ -6,7 +6,7 @@
 using namespace std;
 using namespace cv;
 
-Mat frame, matrix, framePerspective;
+Mat frame, matrix, framePerspective, frameGray, frameThreshold, frameEdge, frameFinal;
 VideoCapture cap(0);
 Point2f Source[] = { Point2f(50,200),Point2f(200,200),Point2f(0,240), Point2f(360,240) };
 Point2f Destination[] = { Point2f(60,0),Point2f(300,0),Point2f(60,240), Point2f(300,240) };
@@ -48,6 +48,17 @@ void Perspective()
     warpPerspective(frame, framePerspective, matrix, Size(360, 240));
 }
 
+// Threshold operations
+void Threshold()
+{
+    cvtColor(framePerspective, frameGray, COLOR_RGB2GRAY);
+    inRange(frameGray, 200, 255, frameThreshold);
+    Canny(frameGray, frameEdge, 900, 900, 3, false);
+    add(frameThreshold, frameEdge, frameFinal);
+    cvtColor(frameFinal, frameFinal, COLOR_GRAY2RGB);
+    cvtColor(frameFinal, frameFinal, COLOR_RGB2BGR);
+}
+
 int main(int argc, char** argv)
 {
 
@@ -65,16 +76,22 @@ int main(int argc, char** argv)
 
         Capture();
         Perspective();
+        Threshold();
 
-        namedWindow("orignal", WINDOW_KEEPRATIO);
-        moveWindow("orignal", 50, 100);
-        resizeWindow("orignal", 640, 480);
-        imshow("orignal", frame);
+        // namedWindow("orignal", WINDOW_KEEPRATIO);
+        // moveWindow("orignal", 0, 100);
+        // resizeWindow("orignal", 640, 480);
+        // imshow("orignal", frame);
 
-        namedWindow("perspective", WINDOW_KEEPRATIO);
-        moveWindow("perspective", 500, 100);
-        resizeWindow("perspective", 640, 480);
-        imshow("perspective", framePerspective);
+        // namedWindow("perspective", WINDOW_KEEPRATIO);
+        // moveWindow("perspective", 640, 100);
+        // resizeWindow("perspective", 640, 480);
+        // imshow("perspective", framePerspective);
+
+        namedWindow("gray", WINDOW_KEEPRATIO);
+        moveWindow("gray", 80, 100);
+        resizeWindow("gray", 640, 480);
+        imshow("gray", frameGray);
 
         auto end = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsedSeconds = end - start;
