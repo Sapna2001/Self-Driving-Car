@@ -13,6 +13,7 @@ RaspiCam_Cv Camera;
 
 Point2f Source[] = { Point2f(50,200),Point2f(200,200),Point2f(0,240), Point2f(360,240) };
 Point2f Destination[] = { Point2f(60,0),Point2f(300,0),Point2f(60,240), Point2f(300,240) };
+vector<int> histrogramLane;
 
 // Resolution for image
 void Setup(int argc, char **argv, RaspiCam_Cv &Camera)
