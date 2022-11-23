@@ -62,6 +62,20 @@ void Threshold()
     cvtColor(frameFinal, frameFinal, COLOR_RGB2BGR);
 }
 
+// Create strips to find lane
+void Histrogram()
+{
+    histrogramLane.resize(frameFinal.size().width);
+    histrogramLane.clear();
+
+    for (int i = 0; i < frameFinal.size().width; i++)
+    {
+        ROILane = frameFinal(Rect(i, 10, 1, 100));
+        divide(255, ROILane, ROILane);
+        histrogramLane.push_back((int)(sum(ROILane)[0]));
+    }
+}
+
 int main(int argc, char **argv)
 {
     Setup(argc, argv, Camera);
@@ -79,6 +93,8 @@ int main(int argc, char **argv)
 
         Capture();
         Perspective();
+	Threshold();
+        Histrogram();
 	
 	// Original frame
         namedWindow("orignal", WINDOW_KEEPRATIO);
