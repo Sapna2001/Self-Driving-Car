@@ -14,6 +14,7 @@ RaspiCam_Cv Camera;
 Point2f Source[] = { Point2f(50,200),Point2f(200,200),Point2f(0,240), Point2f(360,240) };
 Point2f Destination[] = { Point2f(60,0),Point2f(300,0),Point2f(60,240), Point2f(300,240) };
 vector<int> histrogramLane;
+int LeftLanePos, RightLanePos, frameCenter, laneCenter, Result;
 
 // Resolution for image
 void Setup(int argc, char **argv, RaspiCam_Cv &Camera)
@@ -77,6 +78,33 @@ void Histrogram()
     }
 }
 
+// Find the two lanes
+void LaneFinder()
+{
+    vector<int>::iterator LeftPointer;
+    LeftPointer = max_element(histrogramLane.begin(), histrogramLane.begin() + 150);
+    LeftLanePos = distance(histrogramLane.begin(), LeftPointer);
+
+    vector<int>::iterator RightPointer;
+    RightPointer = max_element(histrogramLane.begin() + 250, histrogramLane.end());
+    RightLanePos = distance(histrogramLane.begin(), RightPointer);
+
+    line(frameFinal, Point2f(LeftLanePos, 0), Point2f(LeftLanePos, 240), Scalar(0, 255, 0), 2);
+    line(frameFinal, Point2f(RightLanePos, 0), Point2f(RightLanePos, 240), Scalar(0, 255, 0), 2);
+}
+
+// Find the center of the lane
+void LaneCenter()
+{
+    laneCenter = (RightLanePos - LeftLanePos) / 2 + LeftLanePos;
+    frameCenter = 244;
+
+    line(frameFinal, Point2f(laneCenter, 0), Point2f(laneCenter, 240), Scalar(0, 255, 0), 3);
+    line(frameFinal, Point2f(frameCenter, 0), Point2f(frameCenter, 240), Scalar(255, 0, 0), 3);
+
+    Result = laneCenter - frameCenter;
+}
+
 int main(int argc, char **argv)
 {
     Setup(argc, argv, Camera);
@@ -96,6 +124,8 @@ int main(int argc, char **argv)
         Perspective();
 	Threshold();
         Histrogram();
+	LaneFinder();
+        LaneCenter();
 	
 	// Original frame
         namedWindow("orignal", WINDOW_KEEPRATIO);
@@ -120,13 +150,15 @@ int main(int argc, char **argv)
         moveWindow("edge", 80, 100);
         resizeWindow("edge", 640, 480);
         imshow("edge", frameEdge);
-
-        auto end = std::chrono::system_clock::now();
-        std::chrono::duration<double> elapsedSeconds = end - start;
-        float time = elapsedSeconds.count();
-        int FPS = 1 / time;
-
         waitKey(1);
+	    
+	// Lane detected frame
+	namedWindow("final frame", WINDOW_KEEPRATIO);
+        moveWindow("final frame", 80, 100);
+        resizeWindow("final frame", 640, 480);
+        imshow("final frame", frameFinal);
+	    
+	cout << Result << endl;
     }
 
     return 0;
