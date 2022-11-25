@@ -6,11 +6,13 @@
 using namespace std;
 using namespace cv;
 
-Mat matrix, framePerspective, frameGray, frameThreshold, frameEdge, frameFinal;
+Mat matrix, framePerspective, frameGray, frameThreshold, frameEdge, frameFinal, ROILane;
 Mat frame = imread("C:\\Users\\Sapna\\Desktop\\lane1.jpeg");
 // VideoCapture cap(0);
 Point2f Source[] = { Point2f(240, 150),Point2f(800, 150),Point2f(165, 260), Point2f(880, 260) };
 Point2f Destination[] = { Point2f(300,150),Point2f(740,150),Point2f(225,260), Point2f(820,260) };
+vector<int> histrogramLane;
+int LeftLanePos, RightLanePos, frameCenter, laneCenter, Result;
 
 using namespace cv;
 
@@ -66,6 +68,47 @@ void Threshold()
     cvtColor(frameFinal, frameFinal, COLOR_RGB2BGR);
 }
 
+// Create strips to find lane
+void Histrogram()
+{
+    histrogramLane.resize(frameFinal.size().width);
+    histrogramLane.clear();
+
+    for (int i = 0; i < frameFinal.size().width; i++)
+    {
+        ROILane = frameFinal(Rect(i, 10, 1, 100));
+        divide(255, ROILane, ROILane);
+        histrogramLane.push_back((int)(sum(ROILane)[0]));
+    }
+}
+
+// Find the two lanes
+void LaneFinder()
+{
+    vector<int>::iterator LeftPointer;
+    LeftPointer = max_element(histrogramLane.begin(), histrogramLane.begin() + 150);
+    LeftLanePos = distance(histrogramLane.begin(), LeftPointer);
+
+    vector<int>::iterator RightPointer;
+    RightPointer = max_element(histrogramLane.begin() + 250, histrogramLane.end());
+    RightLanePos = distance(histrogramLane.begin(), RightPointer);
+
+    line(frameFinal, Point2f(LeftLanePos, 0), Point2f(LeftLanePos, 240), Scalar(0, 255, 0), 2);
+    line(frameFinal, Point2f(RightLanePos, 0), Point2f(RightLanePos, 240), Scalar(0, 255, 0), 2);
+}
+
+// Find the center of the lane
+void LaneCenter()
+{
+    laneCenter = (RightLanePos - LeftLanePos) / 2 + LeftLanePos;
+    frameCenter = 244;
+
+    line(frameFinal, Point2f(laneCenter, 0), Point2f(laneCenter, 240), Scalar(0, 255, 0), 3);
+    line(frameFinal, Point2f(frameCenter, 0), Point2f(frameCenter, 240), Scalar(255, 0, 0), 3);
+
+    Result = laneCenter - frameCenter;
+}
+
 int main(int argc, char** argv)
 {
 
@@ -85,30 +128,37 @@ int main(int argc, char** argv)
         // Capture();
         Perspective();
         Threshold();
+        Histrogram();
+        LaneFinder();
+        LaneCenter();
+        // cout << frameFinal.size().width << " " << frameFinal.size().height;
 
-        /*
+      /*
         namedWindow("orignal", WINDOW_KEEPRATIO);
         moveWindow("orignal", 0, 100);
         resizeWindow("orignal", 640, 480);
         imshow("orignal", frame);
-
+   
+  
         namedWindow("perspective", WINDOW_KEEPRATIO);
         moveWindow("perspective", 640, 100);
         resizeWindow("perspective", 640, 480);
         imshow("perspective", framePerspective);
 
+
         namedWindow("gray", WINDOW_KEEPRATIO);
         moveWindow("gray", 80, 100);
         resizeWindow("gray", 640, 480);
         imshow("gray", frameGray);
-        */
+     */
 
         namedWindow("final frame", WINDOW_KEEPRATIO);
         moveWindow("final frame", 80, 100);
         resizeWindow("final frame", 640, 480);
         imshow("final frame", frameFinal);
 
-        
+        cout << Result << endl;
+     
 
         auto end = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsedSeconds = end - start;
