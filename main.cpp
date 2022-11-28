@@ -107,6 +107,12 @@ void LaneCenter()
 
 int main(int argc, char **argv)
 {
+    wiringPiSetup();
+    pinMode(21, OUTPUT);
+    pinMode(22, OUTPUT);
+    pinMode(23, OUTPUT);
+    pinMode(24, OUTPUT);
+	
     Setup(argc, argv, Camera);
 
     cout << "Connecting to camera" << endl;
@@ -159,6 +165,42 @@ int main(int argc, char **argv)
         imshow("final frame", frameFinal);
 	    
 	cout << Result << endl;
+	
+	// Decimal 0 - Move center
+	if (Result == 0) {
+		digitalWrite(21, 0);
+	 	digitalWrite(22, 0);    
+		digitalWrite(23, 0);
+		digitalWrite(24, 0);
+		cout<<"Forward"<<endl;
+    	}
+	
+	// Decimal 1 - Move right slightly as the shift is towards left slighlty
+	else if (Result > 0 && Result < 10) {
+		digitalWrite(21, 1);
+		digitalWrite(22, 0);    
+		digitalWrite(23, 0);
+		digitalWrite(24, 0);
+		cout<<"Right1"<<endl;
+    	}
+	
+	// Decimal 2 - Move right moderately as the shift is towards left moderately
+	else if (Result >= 10 && Result < 20) {
+		digitalWrite(21, 0);
+		digitalWrite(22, 1);    
+		digitalWrite(23, 0);
+		digitalWrite(24, 0);
+		cout<<"Right2"<<endl;
+    	}
+    	
+	// Decimal 3 - Move right extremely as the shift is towards left extremely 
+        else if (Result > 20) {
+		digitalWrite(21, 1);
+		digitalWrite(22, 1);    
+		digitalWrite(23, 0);
+		digitalWrite(24, 0);
+		cout<<"Right3"<<endl;
+    	}
     }
 
     return 0;
