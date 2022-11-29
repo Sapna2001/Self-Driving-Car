@@ -168,39 +168,59 @@ int main(int argc, char **argv)
 	
 	// Decimal 0 - Move center
 	if (Result == 0) {
-		digitalWrite(21, 0);
-	 	digitalWrite(22, 0);    
-		digitalWrite(23, 0);
-		digitalWrite(24, 0);
-		cout<<"Forward"<<endl;
-    	}
-	
+    		digitalWrite(21, 0);
+    		digitalWrite(22, 0);
+    		digitalWrite(23, 0);
+    		digitalWrite(24, 0);
+	}
+
 	// Decimal 1 - Move right slightly as the shift is towards left slighlty
 	else if (Result > 0 && Result < 10) {
-		digitalWrite(21, 1);
-		digitalWrite(22, 0);    
-		digitalWrite(23, 0);
-		digitalWrite(24, 0);
-		cout<<"Right1"<<endl;
-    	}
-	
+    		digitalWrite(21, 1);
+    		digitalWrite(22, 0);
+    		digitalWrite(23, 0);
+    		digitalWrite(24, 0);
+	}
+
 	// Decimal 2 - Move right moderately as the shift is towards left moderately
 	else if (Result >= 10 && Result < 20) {
-		digitalWrite(21, 0);
-		digitalWrite(22, 1);    
-		digitalWrite(23, 0);
-		digitalWrite(24, 0);
-		cout<<"Right2"<<endl;
-    	}
-    	
+    		digitalWrite(21, 0);
+    		digitalWrite(22, 1);
+    		digitalWrite(23, 0);
+    		digitalWrite(24, 0);
+	}
+
 	// Decimal 3 - Move right extremely as the shift is towards left extremely 
-        else if (Result > 20) {
-		digitalWrite(21, 1);
-		digitalWrite(22, 1);    
-		digitalWrite(23, 0);
-		digitalWrite(24, 0);
-		cout<<"Right3"<<endl;
-    	}
+	else if (Result > 20) {
+    		digitalWrite(21, 1);
+    		digitalWrite(22, 1);
+    		digitalWrite(23, 0);
+    		digitalWrite(24, 0);
+	}
+
+	// Decimal 4 - Move left slightly as the shift is towards right slighlty
+	else if (Result < 0 && Result > -10) {
+    		digitalWrite(21, 0);
+    		digitalWrite(22, 0);    
+    		digitalWrite(23, 1);
+    		digitalWrite(24, 0);
+	}
+
+	// Decimal 5 - Move left moderately as the shift is towards right moderately
+	else if (Result <= -10 && Result > -20) {
+    		digitalWrite(21, 1);
+    		digitalWrite(22, 0);    
+    		digitalWrite(23, 1);
+    		digitalWrite(24, 0);
+	}
+
+	// Decimal 6 - Move left extremely as the shift is towards right extremely 
+	else if (Result < -20) {
+    		digitalWrite(21, 0);
+    		digitalWrite(22, 1);    
+   		digitalWrite(23, 1);
+    		digitalWrite(24, 0);
+	}    
     }
 
     return 0;
