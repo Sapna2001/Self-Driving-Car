@@ -7,14 +7,19 @@ using namespace std;
 using namespace cv;
 
 Mat matrix, framePerspective, frameGray, frameThreshold, frameEdge, frameFinal, ROILane;
-Mat frame = imread("C:\\Users\\Sapna\\Desktop\\lane1.jpeg");
+Mat frame = imread("C:\\Users\\Sapna\\Desktop\\Project\\test_images\\lane1.jpeg");
+
 // VideoCapture cap(0);
 Point2f Source[] = { Point2f(240, 150),Point2f(800, 150),Point2f(165, 260), Point2f(880, 260) };
 Point2f Destination[] = { Point2f(300,150),Point2f(740,150),Point2f(225,260), Point2f(820,260) };
 vector<int> histrogramLane;
 int LeftLanePos, RightLanePos, frameCenter, laneCenter, Result;
 
-using namespace cv;
+CascadeClassifier Stop_Cascade;
+Mat frame_Stop = imread("C:\\Users\\Sapna\\Desktop\\Project\\test_images\\stop_sign_2.png");
+Mat ROIStop, gray_Stop;
+vector<Rect> Stop;
+
 
 /*
 void Setup(int argc, char** argv)
@@ -30,14 +35,13 @@ void Setup(int argc, char** argv)
 */
 
 // Capture frame
-/*
 void Capture()
 {
-    cap.grab();
-    cap.retrieve(frame);
+    // cap.grab();
+    // cap.retrieve(frame);
     cvtColor(frame, frame, COLOR_BGR2RGB);
+    cvtColor(frame_Stop, frame_Stop, COLOR_BGR2RGB);
 }
-*/
 
 void Perspective()
 {
@@ -101,13 +105,36 @@ void LaneFinder()
 void LaneCenter()
 {
     laneCenter = (RightLanePos - LeftLanePos) / 2 + LeftLanePos;
-    frameCenter = 244;
+    frameCenter = 245;
 
     line(frameFinal, Point2f(laneCenter, 0), Point2f(laneCenter, 240), Scalar(0, 255, 0), 3);
     line(frameFinal, Point2f(frameCenter, 0), Point2f(frameCenter, 240), Scalar(255, 0, 0), 3);
 
     Result = laneCenter - frameCenter;
 }
+
+void Stop_detection()
+{
+    if(!Stop_Cascade.load("C:\\Users\\Sapna\\Desktop\\Project\\Stop_Sign\\classifier\\stop_cascade.xml"))
+    {
+	printf("Unable to open stop cascade file");
+    }
+    
+    ROIStop = frame_Stop(Rect(0,0,300,400));
+    cvtColor(ROIStop, gray_Stop, COLOR_RGB2GRAY);
+    equalizeHist(gray_Stop, gray_Stop);
+    Stop_Cascade.detectMultiScale(gray_Stop, Stop);
+    
+    for(int i=0; i<Stop.size(); i++)
+    {
+	Point P1(Stop[i].x, Stop[i].y);
+	Point P2(Stop[i].x + Stop[i].width, Stop[i].y + Stop[i].height);
+	
+	rectangle(ROIStop, P1, P2, Scalar(0, 255, 0), 2);
+	putText(ROIStop, "Stop Sign", P1, FONT_HERSHEY_SIMPLEX, 1,  Scalar(0, 0, 255, 255), 2);
+    }   
+}
+
 
 int main(int argc, char** argv)
 {
@@ -122,15 +149,18 @@ int main(int argc, char** argv)
         return-1;
     }*/
 
+    Capture();
+
     while (true) { 
         auto start = std::chrono::system_clock::now();
-
-        // Capture();
         Perspective();
         Threshold();
         Histrogram();
         LaneFinder();
         LaneCenter();
+        cout << "Result: " << Result << endl;
+
+        Stop_detection();
         // cout << frameFinal.size().width << " " << frameFinal.size().height;
 
       /*
@@ -150,20 +180,25 @@ int main(int argc, char** argv)
         moveWindow("gray", 80, 100);
         resizeWindow("gray", 640, 480);
         imshow("gray", frameGray);
-     */
 
         namedWindow("final frame", WINDOW_KEEPRATIO);
         moveWindow("final frame", 80, 100);
         resizeWindow("final frame", 640, 480);
         imshow("final frame", frameFinal);
+        */
 
-        cout << Result << endl;
-     
+        namedWindow("Stop Sign frame", WINDOW_KEEPRATIO);
+        moveWindow("Stop Sign frame", 80, 100);
+        resizeWindow("Stop Sign frame", 800, 640);
+        imshow("Stop Sign frame", ROIStop);
+  
 
+        /*
         auto end = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsedSeconds = end - start;
         float time = elapsedSeconds.count();
         int FPS = 1 / time;
+        */
 
         waitKey(1);
     }
