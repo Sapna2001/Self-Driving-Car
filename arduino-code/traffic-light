@@ -1,0 +1,54 @@
+#define RED_SET_TIME 5000
+#define YELLOW_SET_TIME 2000
+#define GREEN_SET_TIME 5000
+
+#define RED 2
+#define YELLOW 3
+#define GREEN 4
+
+#define GREEN_LIGHT_INDEX 0
+#define YELLOW_LIGHT_INDEX 1
+#define RED_LIGHT_INDEX 2
+
+unsigned long startTimer = 0;
+
+unsigned short setTime[3] = { GREEN_SET_TIME, YELLOW_SET_TIME, RED_SET_TIME };
+
+short lightIndex = GREEN_LIGHT_INDEX;
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(RED, OUTPUT);
+  pinMode(YELLOW, OUTPUT);
+  pinMode(GREEN, OUTPUT);
+
+  digitalWrite(GREEN, HIGH);
+  digitalWrite(YELLOW, LOW);
+  digitalWrite(RED, LOW);  
+  startTimer = millis();
+}
+
+void loop() {
+  if((millis() - startTimer) >= setTime[lightIndex]) {
+    lightIndex++;
+    if(lightIndex > RED_LIGHT_INDEX) {
+      lightIndex = GREEN_LIGHT_INDEX;
+    }
+    
+    startTimer = millis();
+
+    if(lightIndex == GREEN_LIGHT_INDEX) {
+      digitalWrite(GREEN, HIGH);
+      digitalWrite(YELLOW, LOW);
+      digitalWrite(RED, LOW);      
+    } else if(lightIndex == YELLOW_LIGHT_INDEX) {
+      digitalWrite(GREEN, LOW);
+      digitalWrite(YELLOW, HIGH);
+      digitalWrite(RED, LOW);      
+    } else if(lightIndex == RED_LIGHT_INDEX) {
+      digitalWrite(GREEN, LOW);
+      digitalWrite(YELLOW, LOW);
+      digitalWrite(RED, HIGH);      
+    }
+  }
+}
