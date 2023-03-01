@@ -8,7 +8,7 @@ using namespace std;
 using namespace cv;
 using namespace raspicam;
 
-Mat frame, matrix, framePerspective, frameGray, frameThreshold, frameEdge, frameFinal;
+Mat frame, matrix, framePerspective, frameGray, frameThreshold, frameEdge, frameFinal, ROILane;
 int LeftLanePos, RightLanePos, frameCenter, laneCenter, Result;
 RaspiCam_Cv Camera;
 stringstream ss;
