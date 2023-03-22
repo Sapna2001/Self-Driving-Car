@@ -3,7 +3,7 @@
 <params>
   <stageType>BOOST</stageType>
   <featureType>HAAR</featureType>
-  <height>12</height>
+  <height>24</height>
   <width>24</width>
   <stageParams>
     <boostType>GAB</boostType>
