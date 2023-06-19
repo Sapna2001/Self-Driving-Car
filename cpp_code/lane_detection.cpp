@@ -8,17 +8,22 @@
 #include "opencv2/imgproc/imgproc.hpp"
 #include <chrono>
 #include <ctime>
+#include <wiringPi.h>
+#include <SerialStream.h>
+#include <unistd.h>
 
 using namespace std;
 using namespace cv;
 
-Mat frame, matrix, framePerspective, frameGray, frameThreshold, frameEdge, frameFinal, ROILane, camera, image;
-
+Mat frame, matrix, framePerspective, frameGray, frameThreshold, frameEdge, frameFinal, ROILane;
+//Mat Camera;
+Mat camera;
+Mat image;
 int LeftLanePos, RightLanePos, frameCenter, laneCenter, Result;
 stringstream ss;
 vector<int> histrogramLane;
-Point2f Source[] = {Point2f(40,295),Point2f(596,295),Point2f(0,340), Point2f(636,340)};
-Point2f Destination[] = {Point2f(180,0),Point2f(480,0),Point2f(180,478), Point2f(480,478)};
+Point2f Source[] = {Point2f(6,280),Point2f(630,280),Point2f(-30,315), Point2f(666,315)};
+Point2f Destination[] = {Point2f(150,0),Point2f(480,0),Point2f(150,478), Point2f(480,478)};
 
 /* Resolution for image
 void Setup(int argc, chr** argv, RaspiCam_Cv& Camera) {
@@ -53,7 +58,7 @@ void Perspective() {
 
     	matrix = getPerspectiveTransform(Source, Destination);
     	warpPerspective(image, framePerspective, matrix, Size(560, 478));
-       imshow("perspective frame", image);
+       imshow("Original frame", image);
 }
 
 // Threshold operations
@@ -81,36 +86,88 @@ void Histrogram() {
 // Find the two lanes
 void LaneFinder() {
     vector<int>::iterator LeftPointer;
-    LeftPointer = max_element(histrogramLane.begin(), histrogramLane.begin() + 150);
+    LeftPointer = max_element(histrogramLane.begin(), histrogramLane.begin() + frameFinal.size().width/2);
     LeftLanePos = distance(histrogramLane.begin(), LeftPointer);
 
     vector<int>::iterator RightPointer;
-    RightPointer = max_element(histrogramLane.begin() + 250, histrogramLane.end());
+    RightPointer = max_element(histrogramLane.begin() + frameFinal.size().width/2, histrogramLane.end());
     RightLanePos = distance(histrogramLane.begin(), RightPointer);
 
-    line(frameFinal, Point2f(LeftLanePos, 0), Point2f(LeftLanePos, 240), Scalar(0, 255, 0), 2);
-    line(frameFinal, Point2f(RightLanePos, 0), Point2f(RightLanePos, 240), Scalar(0, 255, 0), 2);
+    line(frameFinal, Point2f(LeftLanePos, 0), Point2f(LeftLanePos, frameFinal.size().height), Scalar(0, 255, 0), 2);
+    line(frameFinal, Point2f(RightLanePos, 0), Point2f(RightLanePos, frameFinal.size().height), Scalar(0, 255, 0), 2);
 }
+
 
 // Find the center of the lane
 void LaneCenter() {
     laneCenter = (RightLanePos - LeftLanePos) / 2 + LeftLanePos;
-    frameCenter = 125;
+    frameCenter = 314;
 
-    line(frameFinal, Point2f(laneCenter, 0), Point2f(laneCenter, 240), Scalar(0, 255, 0), 3);
-    line(frameFinal, Point2f(frameCenter, 0), Point2f(frameCenter, 240), Scalar(255, 0, 0), 3);
+    line(frameFinal, Point2f(laneCenter, 0), Point2f(laneCenter, frameFinal.size().height), Scalar(0, 255, 0), 3);
+    line(frameFinal, Point2f(frameCenter, 0), Point2f(frameCenter, frameFinal.size().height), Scalar(255, 0, 0), 3);
 
     Result = laneCenter - frameCenter;
 }
 
+void communicate(string ch) {
+    using namespace std;
+    using namespace LibSerial;
+
+    //cout << "Running. Press CTRL-C to exit." << endl;
+    SerialStream arduino;
+    arduino.Open("/dev/ttyACM0");
+    arduino.SetBaudRate(SerialStreamBuf::BAUD_9600);
+    arduino.SetCharSize(SerialStreamBuf::CHAR_SIZE_8);
+    arduino.SetFlowControl(SerialStreamBuf::FLOW_CONTROL_NONE);
+    arduino.SetParity(SerialStreamBuf::PARITY_NONE);
+    arduino.SetNumOfStopBits(1);
+    arduino.SetVTime(100); // inter-character timeout in deciseconds
+
+    if (arduino.IsOpen())
+    {
+        cout << "/dev/ttyACM0 connected!" << endl;
+        try
+        {
+            
+                cout << "Enter command: ";
+                string cmd = ch;
+                arduino << cmd << endl;
+                //usleep(100000); // wait for arduino to answer
+                while (arduino.rdbuf()->in_avail() == 0) {} // wait for data to be available
+                if (arduino.rdbuf()->in_avail() > 0)
+                {
+                    string answer;
+                    getline(arduino, answer);
+                    cout << answer << endl;
+                    arduino.ignore(1000, '\n'); // remove data after reading
+                }
+            
+        }
+        catch (const exception& e)
+        {
+            cout << "Exception: " << e.what() << endl;
+        }
+        catch (...)
+        {
+            cout << "Unknown exception occurred." << endl;
+        }
+    }
+    else
+    {
+        cout << "Failed to open /dev/ttyACM0" << endl;
+    }
+
+}
+
 int main(int argc, char *argv[]) {
     
-  VideoCapture videoCapture(0);
+  VideoCapture videoCapture("outcpp.avi");
   if(!videoCapture.isOpened()) {
     std::cerr << "failed to open video capture" << endl;
     return -1;
   }
     while (1) {
+        videoCapture.set(CAP_PROP_FPS, ("-fps",1));
         videoCapture >> image;
     imshow( "image", image );
     int c = waitKey(1);
@@ -122,6 +179,55 @@ int main(int argc, char *argv[]) {
         Histrogram();
         LaneFinder();
         LaneCenter();
+        
+        
+        if (Result == 0)
+    {
+	
+    communicate("a");
+	cout<<"Forward"<<endl;
+    }
+    
+        
+    else if (Result >10 && Result <20)
+    {
+	communicate("c");
+	cout<<"Left1"<<endl;
+    }
+    
+        else if (Result >=20 && Result <30)
+    {
+	communicate("d");
+	cout<<"Left2"<<endl;
+    }
+    
+        else if (Result >40)
+    {
+	communicate("e");
+	cout<<"Left3"<<endl;
+    }
+    
+        else if (Result <-10 && Result >-20)
+    {
+	communicate("f");
+	cout<<"Right1"<<endl;
+    }
+    
+        else if (Result <=-20 && Result >-30)
+    {
+	communicate("g");
+	cout<<"Right2"<<endl;
+    }
+    
+        else if (Result <-30)
+    {
+	communicate("h");
+            cout<<"Right3"<<endl;
+
+	//cout<<"Left3"<<endl;
+    } else {
+        communicate("a");
+    }
     
         ss.str(" ");
         ss.clear();
@@ -129,7 +235,7 @@ int main(int argc, char *argv[]) {
         putText(image, ss.str(), Point2f(1,50), 0,1, Scalar(0,0,255), 2);
         
       
-        // Original frame
+    // Original frame
         namedWindow("orignal", WINDOW_KEEPRATIO);
         moveWindow("orignal", 50, 100);
         resizeWindow("orignal", 640, 480);
@@ -140,12 +246,13 @@ int main(int argc, char *argv[]) {
         moveWindow("perspective", 640, 100);
         resizeWindow("perspective", 640, 480);
         imshow("perspective", framePerspective);
-        
+
+    // Threshold framr      
        namedWindow("threshold", WINDOW_KEEPRATIO);
         moveWindow("threshold", 80, 100);
         resizeWindow("threshold", 640, 480);
         imshow("threshold", frameThreshold); 
-	   
+	 
 	// Gray frame
 	namedWindow("gray", WINDOW_KEEPRATIO);
         moveWindow("gray", 80, 100);
@@ -161,13 +268,13 @@ int main(int argc, char *argv[]) {
        // waitKey(1);
 	   
 	// Lane detected frame
-	namedWindow("final frame", WINDOW_KEEPRATIO);
+	    namedWindow("final frame", WINDOW_KEEPRATIO);
         moveWindow("final frame", 50, 560);
         resizeWindow("final frame", 640, 480);
         imshow("final frame", frameFinal);
 	  
-	//cout << Result << endl; 
-  
+	cout << Result << endl;
+    
         waitKey(1); 
     } 
 
